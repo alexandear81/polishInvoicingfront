@@ -14,8 +14,19 @@ export default function DashboardLayout({ title, description, children }: Dashbo
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
-      <header className="bg-white shadow p-4 flex items-center justify-between">
-        <div className="text-lg font-semibold">Polish Invoicing</div>
+      <header className="bg-white shadow p-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <div className="text-gray-400 font-bold text-sm tracking-wide uppercase">Polish Invoicing</div>
+          {title && (
+            <div className="text-lg font-semibold text-gray-900">
+              {title}
+              {description && (
+                <span className="text-sm font-normal text-gray-500 ml-2">({description})</span>
+              )}
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center gap-4">
           {user && (
             <>
@@ -33,12 +44,6 @@ export default function DashboardLayout({ title, description, children }: Dashbo
       </header>
 
       <main className="max-w-6xl mx-auto p-6">
-        {title && (
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">{title}</h1>
-        )}
-        {description && (
-          <p className="text-gray-500 mb-6 text-sm">{description}</p>
-        )}
         {children || <Outlet />}
       </main>
     </div>
