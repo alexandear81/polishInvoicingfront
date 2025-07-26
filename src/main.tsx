@@ -6,11 +6,15 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './output.css'
 import App from './App.tsx'
+import AuthProvider from './auth/AuthProvider'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,
 )
+
