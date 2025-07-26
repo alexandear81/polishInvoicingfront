@@ -9,6 +9,7 @@ const emptyParty: Party = { name: "", nip: "", address: "", account: "", email: 
 const emptyItem: InvoiceItem = { description: "", unit: "", quantity: 1, price: 0, vatRate: 23, taxAmount: 0, total: 0 };
 
 export default function InvoiceDataForm() {
+    const [showPreview, setShowPreview] = useState(false)
     const [invoice, setInvoice] = useState<InvoiceData>({
         parties: { buyer: { ...emptyParty }, seller: { ...emptyParty } },
         dates: { issueDate: "", saleDate: "", dueDate: "" },
@@ -60,7 +61,14 @@ export default function InvoiceDataForm() {
                         <span className="font-semibold">Total Gross:</span> {totalGross.toFixed(2)} {invoice.currency}
                     </div>
                 </div>
-            </div>{invoice.parties.buyer.name && invoice.parties.seller.name && invoice.items.length > 0 && (
+            </div>
+            <button
+                              onClick={() => setShowPreview(true)}
+                              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-6"
+            >
+                              Generate Preview
+            </button>
+            {showPreview && (
                 <div className="mt-10 border-t pt-6">
                     <h2 className="text-xl font-semibold mb-4 text-gray-700">Invoice Preview</h2>
                     <InvoicePreview data={invoice} />
