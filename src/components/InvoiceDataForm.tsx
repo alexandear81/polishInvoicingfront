@@ -63,10 +63,11 @@ export default function InvoiceDataForm() {
                 </div>
             </div>
             <button
-                              onClick={() => setShowPreview(true)}
-                              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-6"
+                type="button"
+                onClick={() => setShowPreview(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-6"
             >
-                              Generate Preview
+                Generate Preview
             </button>
             {showPreview && (
                 <div className="mt-10 border-t pt-6">
