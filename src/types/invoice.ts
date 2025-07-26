@@ -26,6 +26,7 @@ export interface InvoiceData {
     saleDate: string
     dueDate: string
   }
+  number?: string
   currency: string
   paymentMethod: string
   items: InvoiceItem[]
