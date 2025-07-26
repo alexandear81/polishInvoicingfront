@@ -1,10 +1,13 @@
 import AppLayout from "../layout/AppLayout"
+import DashboardTiles from "../components/DashboardTiles"
 
 export default function Dashboard() {
   return (
     <AppLayout>
-      <h1 className="text-2xl font-bold mb-4">Добро пожаловать в панель управления!</h1>
-      <p className="text-gray-600">Здесь будут действия: создать инвойс, исправить, просмотреть входящие…</p>
+      <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Available actions</h1>
+      <DashboardTiles />
+    </div>
     </AppLayout>
   )
 }

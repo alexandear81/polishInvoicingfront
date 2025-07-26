@@ -27,7 +27,7 @@ export default function AppLayout({ children }: Props) {
             onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
             className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
           >
-            Выйти
+            Log out
           </button>
         </div>
       </header>
