@@ -7,7 +7,7 @@ export default function Landing() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-xl text-gray-700">Загрузка...</p>
+        <p className="text-xl text-gray-700">Loading...</p>
       </div>
     )
   }
@@ -18,15 +18,15 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-      <h1 className="text-4xl font-bold text-blue-600 mb-4">Добро пожаловать!</h1>
+      <h1 className="text-4xl font-bold text-blue-600 mb-4">Welcome!</h1>
       <p className="mb-6 text-gray-600 text-center">
-        Это приложение поможет вам работать с польскими инвойсами и отправлять их в KSeF
+        This application will help you work with Polish invoices and send them to KSeF
       </p>
       <button
         onClick={() => loginWithRedirect()}
         className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
       >
-        Войти
+        Sign In
       </button>
     </div>
   )
