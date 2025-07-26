@@ -1,38 +1,46 @@
+// src/layout/DashboardLayout.tsx
+import type { ReactNode } from "react"
+import { Outlet } from "react-router-dom"
 import { useAuth0 } from "@auth0/auth0-react"
-import { useNavigate } from "react-router-dom"
 
-interface Props {
-  children: React.ReactNode
+interface DashboardLayoutProps {
+  title?: string
+  description?: string
+  children?: ReactNode
 }
 
-export default function AppLayout({ children }: Props) {
+export default function DashboardLayout({ title, description, children }: DashboardLayoutProps) {
   const { user, logout } = useAuth0()
-  const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white shadow px-6 py-4 flex items-center justify-between">
-        <div className="text-xl font-bold text-blue-600 cursor-pointer" onClick={() => navigate("/")}>
-          Polish Invoicing
-        </div>
-
+    <div className="min-h-screen bg-gray-50 text-gray-800">
+      <header className="bg-white shadow p-4 flex items-center justify-between">
+        <div className="text-lg font-semibold">Polish Invoicing</div>
         <div className="flex items-center gap-4">
           {user && (
             <>
               <img src={user.picture} alt="avatar" className="w-8 h-8 rounded-full" />
-              <span className="text-gray-700">{user.name}</span>
+              <span className="text-sm text-gray-700">{user.name}</span>
+              <button
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                className="text-red-600 hover:underline text-sm"
+              >
+                Log out
+              </button>
             </>
           )}
-          <button
-            onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-            className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
-          >
-            Log out
-          </button>
         </div>
       </header>
 
-      <main className="p-6 flex-1">{children}</main>
+      <main className="max-w-6xl mx-auto p-6">
+        {title && (
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">{title}</h1>
+        )}
+        {description && (
+          <p className="text-gray-500 mb-6 text-sm">{description}</p>
+        )}
+        {children || <Outlet />}
+      </main>
     </div>
   )
 }
