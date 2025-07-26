@@ -9,7 +9,7 @@ interface DashboardLayoutProps {
   children?: ReactNode
 }
 
-export default function DashboardLayout({ title, description, children }: DashboardLayoutProps) {
+export default function AppLayout({ title, description, children }: DashboardLayoutProps) {
   const { user, logout } = useAuth0()
 
   return (
