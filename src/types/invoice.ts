@@ -14,6 +14,8 @@ export interface InvoiceItem {
   quantity: number
   price: number
   vatRate: number
+  taxAmount: number
+  total: number
 }
 
 export interface InvoiceData {

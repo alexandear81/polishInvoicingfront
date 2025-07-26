@@ -5,7 +5,7 @@ import Dates from "./Dates";
 import Items from "./Items";
 
 const emptyParty: Party = { name: "", nip: "", address: "", account: "", email: "" };
-const emptyItem: InvoiceItem = { description: "", unit: "", quantity: 1, price: 0, vatRate: 23 };
+const emptyItem: InvoiceItem = { description: "", unit: "", quantity: 1, price: 0, vatRate: 23, taxAmount: 0, total: 0 };
 
 export default function InvoiceDataForm() {
   const [invoice, setInvoice] = useState<InvoiceData>({
@@ -46,7 +46,7 @@ export default function InvoiceDataForm() {
           <input type="text" className="w-full border px-2 py-1 rounded" value={invoice.paymentMethod} onChange={e => updateGeneral("paymentMethod", e.target.value)} />
         </div>
       </div>
-      <Items items={invoice.items} onChange={updateItems} currency={invoice.currency} />
+      <Items items={invoice.items} onChange={updateItems} />
       <div className="mt-6 p-4 border rounded-lg bg-gray-50">
         <div className="flex flex-col md:flex-row gap-6 justify-between">
           <div>
