@@ -2,6 +2,7 @@
 import type { ReactNode } from "react"
 import { Outlet } from "react-router-dom"
 import { useAuth0 } from "@auth0/auth0-react"
+import { LogOut } from "lucide-react"
 
 interface DashboardLayoutProps {
   title?: string
@@ -34,9 +35,10 @@ export default function AppLayout({ title, description, children }: DashboardLay
               <span className="text-sm text-gray-700">{user.name}</span>
               <button
                 onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-                className="text-red-600 hover:underline text-sm"
+                className="hover:text-red-600 transition"
+                title="Log out"
               >
-                Log out
+                <LogOut className="w-5 h-5" />
               </button>
             </>
           )}
