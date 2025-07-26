@@ -12,7 +12,7 @@ export default function AuthProviderWithHistory({ children }: Props) {
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID!
 
   const onRedirectCallback = (appState: any) => {
-    navigate(appState?.returnTo || '/dashboard')
+    navigate(appState?.returnTo || '/callback')
   }
 
   return (
