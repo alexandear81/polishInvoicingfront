@@ -1,3 +1,9 @@
+import DashboardLayout from "../layout/AppLayout"
+
 export default function IncomingInvoicesPage() {
-  return <h1 className="text-2xl font-bold">Incoming Invoices</h1>;
+  return (
+    <DashboardLayout title="Incoming Invoices" description="View invoices received via KSeF">
+      <div className="text-xl font-bold text-green-700">This is the Incoming Invoices page</div>
+    </DashboardLayout>
+  )
 }
