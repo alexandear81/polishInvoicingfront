@@ -1,18 +1,23 @@
-// src/layout/DashboardLayout.tsx
-import type { ReactNode } from "react"
-import { Outlet, useNavigate } from "react-router-dom"
-import { useAuth0 } from "@auth0/auth0-react"
-import { LogOut, Home } from "lucide-react"
+import type { ReactNode } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { LogOut, Home } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { auth } from "../firebase/firebase";
 
 interface DashboardLayoutProps {
-  title?: string
-  description?: string
-  children?: ReactNode
+  title?: string;
+  description?: string;
+  children?: ReactNode;
 }
 
 export default function DashboardLayout({ title, description, children }: DashboardLayoutProps) {
-  const { user, logout } = useAuth0()
-  const navigate = useNavigate()
+  const user = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await auth.signOut();
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
@@ -28,12 +33,16 @@ export default function DashboardLayout({ title, description, children }: Dashbo
             </button>
           )}
           <div>
-            <div className="text-gray-400 font-bold text-sm tracking-wide uppercase">Polish Invoicing</div>
+            <div className="text-gray-400 font-bold text-sm tracking-wide uppercase">
+              Polish Invoicing
+            </div>
             {title && (
               <div className="text-lg font-semibold text-gray-900">
                 {title}
                 {description && (
-                  <span className="text-sm font-normal text-gray-500 ml-2">({description})</span>
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    ({description})
+                  </span>
                 )}
               </div>
             )}
@@ -43,10 +52,12 @@ export default function DashboardLayout({ title, description, children }: Dashbo
         <div className="flex items-center gap-4">
           {user && (
             <>
-              <img src={user.picture} alt="avatar" className="w-8 h-8 rounded-full" />
-              <span className="text-sm text-gray-700">{user.name}</span>
+              {user.photoURL && (
+                <img src={user.photoURL} alt="avatar" className="w-8 h-8 rounded-full" />
+              )}
+              <span className="text-sm text-gray-700">{user.displayName || user.email}</span>
               <button
-                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                onClick={handleLogout}
                 className="hover:text-red-600 transition"
                 title="Log out"
               >
@@ -61,5 +72,5 @@ export default function DashboardLayout({ title, description, children }: Dashbo
         {children || <Outlet />}
       </main>
     </div>
-  )
+  );
 }
