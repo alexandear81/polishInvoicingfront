@@ -10,6 +10,7 @@ import RequestTokenPage from './pages/RequestTokenPage';
 import SettingsPage from './pages/SettingsPage';
 import { useAuth } from "./hooks/useAuth";
 import type { JSX } from "react";
+import CookieBanner from "./components/CookieBanner";
 
 export default function App() {
   const user = useAuth();
@@ -19,6 +20,7 @@ export default function App() {
   };
 
   return (
+    <>
     <Routes>
       <Route path="/" element={<Landing />} />
       {/* <Route path="/callback" element={<CallbackPage />} /> */}
@@ -30,5 +32,7 @@ export default function App() {
       <Route path="/token" element={requireAuth(<RequestTokenPage />)} />
       <Route path="/settings" element={requireAuth(<SettingsPage />)} />
     </Routes>
+    <CookieBanner />
+    </>
   );
 }
