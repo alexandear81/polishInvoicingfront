@@ -10,7 +10,7 @@ import RequestTokenPage from './pages/RequestTokenPage';
 import SettingsPage from './pages/SettingsPage';
 import { useAuth } from "./hooks/useAuth";
 import type { JSX } from "react";
-import CookieBanner from "./components/CookieBanner";
+import CookieBanner from "./components/msc/CookieBanner";
 
 export default function App() {
   const user = useAuth();

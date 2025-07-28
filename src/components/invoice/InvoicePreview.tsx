@@ -1,5 +1,5 @@
 // src/components/InvoicePreview.tsx
-import type { InvoiceData } from "../types/invoice"
+import type { InvoiceData } from "../../types/invoice"
 
 interface Props {
   data: InvoiceData

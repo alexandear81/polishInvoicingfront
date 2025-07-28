@@ -1,5 +1,5 @@
 import AppLayout from "../layout/AppLayout"
-import DashboardTiles from "../components/DashboardTiles"
+import DashboardTiles from "../components/dashboard/DashboardTiles"
 
 export default function Dashboard() {
   return (

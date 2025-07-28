@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { InvoiceData, Party, InvoiceItem } from "../types/invoice";
+import type { InvoiceData, Party, InvoiceItem } from "../../types/invoice";
 import Parties from "./Parties";
 import Dates from "./Dates";
 import Items from "./Items";

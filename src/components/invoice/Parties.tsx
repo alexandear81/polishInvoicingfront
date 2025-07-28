@@ -1,4 +1,4 @@
-import type { Party } from "../types/invoice";
+import type { Party } from "../../types/invoice";
 
 interface PartiesProps {
   parties: { buyer: Party; seller: Party };

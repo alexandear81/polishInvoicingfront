@@ -1,7 +1,7 @@
 // src/pages/CreateInvoicePage.tsx
 
 import DashboardLayout from "../layout/AppLayout";
-import InvoiceDataForm from "../components/InvoiceDataForm";
+import InvoiceDataForm from "../components/invoice/InvoiceDataForm";
 
 export default function CreateInvoicePage() {
   return (

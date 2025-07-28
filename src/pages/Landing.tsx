@@ -1,4 +1,4 @@
-import { LoginButton } from "../components/LoginButton";
+import { LoginButton } from "../components/buttons/LoginButton.tsx";
 import logo from "../assets/logo.png"; // Adjust the path as necessary
 
 export default function Landing() {
