@@ -22,7 +22,9 @@ const RequestTokenPage: React.FC = () => {
         {
           headers: {
             'Content-Type': 'application/json',
-          },
+            'Accept': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (compatible; PolishInvoicing/1.0)',
+          }
         }
       );
 
