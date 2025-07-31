@@ -1,0 +1,67 @@
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+// Create axios instance with default config
+export const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// KSeF API endpoints
+export const ksefApi = {
+  // Request authorization challenge
+  requestChallenge: async (contextIdentifier: { type: string; identifier: string }) => {
+    const response = await apiClient.post('/api/ksef/authorization-challenge', {
+      contextIdentifier,
+    });
+    return response.data;
+  },
+
+  // Initialize session with signed XML
+  initSession: async (signedXmlFile: File) => {
+    const formData = new FormData();
+    formData.append('signedXml', signedXmlFile);
+    
+    const response = await apiClient.post('/api/ksef/init-session-signed', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  // Send invoice
+  sendInvoice: async (sessionToken: string, invoiceXml: string) => {
+    const response = await apiClient.post('/api/ksef/send-invoice', {
+      sessionToken,
+      invoiceXml,
+    });
+    return response.data;
+  },
+
+  // Get invoice status
+  getInvoiceStatus: async (sessionToken: string, referenceNumber: string) => {
+    const response = await apiClient.get(`/api/ksef/invoice-status/${referenceNumber}`, {
+      headers: {
+        'session-token': sessionToken,
+      },
+    });
+    return response.data;
+  },
+
+  // Terminate session
+  terminateSession: async (sessionToken: string) => {
+    const response = await apiClient.post('/api/ksef/terminate-session', {}, {
+      headers: {
+        'session-token': sessionToken,
+      },
+    });
+    return response.data;
+  },
+};
+
+export default ksefApi;

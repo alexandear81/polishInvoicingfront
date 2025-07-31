@@ -1,6 +1,6 @@
 // src/components/DashboardTiles.tsx
 import { useNavigate } from "react-router-dom"
-import { FilePlus, Edit, Inbox, Send, KeyRound, Settings } from "lucide-react"
+import { FilePlus, Edit, Inbox, Send, KeyRound, Upload, Settings } from "lucide-react"
 
 const actions = [
   {
@@ -24,7 +24,7 @@ const actions = [
   {
     title: "Send to KSeF",
     description: "Upload and sign a file",
-    icon: <Send className="w-8 h-8 text-purple-600" />,
+    icon: <Upload className="w-8 h-8 text-purple-600" />,
     route: "/send"
   },
   {
@@ -32,6 +32,12 @@ const actions = [
     description: "Request a token to connect with KSeF",
     icon: <KeyRound className="w-8 h-8 text-red-600" />,
     route: "/token"
+  },
+  {
+    title: "Send Invoice",
+    description: "Send invoice with session token",
+    icon: <Send className="w-8 h-8 text-orange-600" />,
+    route: "/send-invoice"
   },
   {
     title: "Settings",

@@ -7,6 +7,7 @@ import EditInvoicePage from './pages/EditInvoicePage';
 import IncomingInvoicesPage from './pages/IncomingInvoicesPage';
 import SendToKsefPage from './pages/SendToKsefPage';
 import RequestTokenPage from './pages/RequestTokenPage';
+import SendInvoicePage from './pages/SendInvoicePage';
 import SettingsPage from './pages/SettingsPage';
 import { useAuth } from "./hooks/useAuth";
 import type { JSX } from "react";
@@ -30,6 +31,7 @@ export default function App() {
       <Route path="/incoming" element={requireAuth(<IncomingInvoicesPage />)} />
       <Route path="/send" element={requireAuth(<SendToKsefPage />)} />
       <Route path="/token" element={requireAuth(<RequestTokenPage />)} />
+      <Route path="/send-invoice" element={requireAuth(<SendInvoicePage />)} />
       <Route path="/settings" element={requireAuth(<SettingsPage />)} />
     </Routes>
     <CookieBanner />

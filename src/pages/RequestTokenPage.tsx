@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { saveAs } from 'file-saver';
+import { ksefApi } from '../services/ksefApi';
 
 const RequestTokenPage: React.FC = () => {
   const [idType, setIdType] = useState('onip');
@@ -11,28 +11,16 @@ const RequestTokenPage: React.FC = () => {
 
   const requestChallenge = async () => {
     try {
-      const response = await axios.post(
-        'https://ksef-test.mf.gov.pl/api/online/Session/AuthorisationChallenge',
-        {
-          contextIdentifier: {
-            type: idType,
-            identifier: idValue,
-          },
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (compatible; PolishInvoicing/1.0)',
-          }
-        }
-      );
+      const response = await ksefApi.requestChallenge({
+        type: idType,
+        identifier: idValue,
+      });
 
-      setChallenge(response.data.challenge);
-      setTimestamp(response.data.timestamp);
-      console.log('Challenge:', challenge);
-      console.log('Timestamp:', timestamp);
-      generateXml(response.data.challenge, response.data.timestamp);
+      setChallenge(response.challenge);
+      setTimestamp(response.timestamp);
+      console.log('Challenge:', response.challenge);
+      console.log('Timestamp:', response.timestamp);
+      generateXml(response.challenge, response.timestamp);
     } catch (error) {
       alert('Failed to fetch challenge');
       console.error(error);
@@ -64,17 +52,13 @@ const RequestTokenPage: React.FC = () => {
   const sendSignedXml = async () => {
     if (!file) return alert('Please select a file first.');
     try {
-      const formData = new FormData();
-      formData.append('signedXml', file);
+      const response = await ksefApi.initSession(file);
 
-      const response = await axios.post('/api/init-session-signed', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        responseType: 'blob',
-      });
-
-      saveAs(response.data, 'InitSessionResponse.txt');
+      // Save the session token and response data
+      const blob = new Blob([JSON.stringify(response, null, 2)], { type: 'application/json' });
+      saveAs(blob, 'SessionToken.json');
+      
+      alert(`Session initialized successfully! Session token saved to file.`);
     } catch (error) {
       alert('Failed to send signed XML');
       console.error(error);
