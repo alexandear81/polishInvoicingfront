@@ -18,9 +18,9 @@ const RequestTokenPage: React.FC = () => {
 
       setChallenge(response.challenge);
       setTimestamp(response.timestamp);
-      console.log('Challenge:', response.challenge);
-      console.log('Timestamp:', response.timestamp);
-      generateXml(response.challenge, response.timestamp);
+      console.log('Challenge:', challenge);
+      console.log('Timestamp:', timestamp);
+      generateXml(challenge, timestamp);
     } catch (error) {
       alert('Failed to fetch challenge');
       console.error(error);
