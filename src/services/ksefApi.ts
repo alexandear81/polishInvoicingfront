@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+/**
+ * KSeF API Service
+ * 
+ * Communicates with the backend server that acts as a proxy to the official KSeF API.
+ * Backend handles CORS issues and provides proper authentication with Polish tax system.
+ * 
+ * Production Backend: https://polishinvoicingback-1.onrender.com
+ */
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://polishinvoicingback-1.onrender.com';
 
 // Create axios instance with default config
 export const apiClient = axios.create({
@@ -30,6 +39,15 @@ export const ksefApi = {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+    });
+    return response.data;
+  },
+
+  // Request session token with base64 signed XML
+  requestSessionToken: async (signedXmlBase64: string) => {
+    const response = await apiClient.post('/api/ksef/request-session-token', {
+      signedXmlBase64,
+      environment: 'test'
     });
     return response.data;
   },
