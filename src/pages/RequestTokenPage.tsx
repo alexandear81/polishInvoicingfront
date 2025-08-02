@@ -18,6 +18,7 @@ const RequestTokenPage: React.FC = () => {
   const [idValue, setIdValue] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [certFile, setCertFile] = useState<File | null>(null);
+  const [xmlToSign, setXmlToSign] = useState<string>('');
 
   const requestChallenge = async () => {
     try {
@@ -26,14 +27,12 @@ const RequestTokenPage: React.FC = () => {
         identifier: idValue,
       });
 
-      console.log('Challenge:', response.challenge);
-      console.log('Timestamp:', response.timestamp);
-
       if (response.xmlToSign) {
         const xmlContent = atob(response.xmlToSign);
+        setXmlToSign(xmlContent);
         const blob = new Blob([xmlContent], { type: 'application/xml' });
         saveAs(blob, 'InitSessionSignedRequest.xml');
-        alert('XML file downloaded! Sign it with ePUAP/qualified certificate and upload it back.');
+        alert('XML file downloaded! Sign it with ePUAP/qualified certificate or use test certificate option below.');
       }
     } catch (error) {
       alert('Failed to fetch challenge');
@@ -59,12 +58,9 @@ const RequestTokenPage: React.FC = () => {
     try {
       const fileContent = await file.text();
       const base64Content = btoa(fileContent);
-
       const response = await ksefApi.requestSessionToken(base64Content);
-
       const blob = new Blob([JSON.stringify(response, null, 2)], { type: 'application/json' });
       saveAs(blob, 'SessionToken.json');
-
       alert(`Session token generated successfully! Token saved to SessionToken.json file.`);
     } catch (error) {
       alert('Failed to generate session token');
@@ -73,57 +69,34 @@ const RequestTokenPage: React.FC = () => {
   };
 
   const signWithTestCertificate = async () => {
-    if (!certFile || !file) return alert('Upload both .p12 certificate and XML file to sign.');
+    if (!certFile || !xmlToSign) return alert('Please provide both the certificate and generate the XML first.');
 
     try {
-      console.log('🔒 Signing XML with test certificate...');
-
-      // Read certificate file
       const p12ArrayBuffer = await certFile.arrayBuffer();
       const p12Buffer = forge.util.createBuffer(p12ArrayBuffer);
       const p12Asn1 = forge.asn1.fromDer(p12Buffer);
-      const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, false, ''); // No password
+      const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, false, '');
 
-      // Extract private key and certificate
       const keyBags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
       const certBags = p12.getBags({ bagType: forge.pki.oids.certBag });
-
-      if (!keyBags[forge.pki.oids.pkcs8ShroudedKeyBag] || !certBags[forge.pki.oids.certBag]) {
-        throw new Error('Invalid certificate file - missing key or certificate');
-      }
-
-      const privateKey = keyBags[forge.pki.oids.pkcs8ShroudedKeyBag]?.[0]?.key;
-      if (!privateKey) {
-        throw new Error('Private key is undefined. Please check the certificate file.');
-      }
+      const privateKey = keyBags[forge.pki.oids.pkcs8ShroudedKeyBag]?.[0]?.key as forge.pki.rsa.PrivateKey;
       const certificate = certBags[forge.pki.oids.certBag]?.[0]?.cert;
-      if (!certificate) {
-        throw new Error('Certificate is undefined. Please check the certificate file.');
-      }
 
-      // Read XML content
-      const xmlContent = await file.text();
-      console.log('📄 Signing XML content, length:', xmlContent.length);
-
-      // Create XML signature using XMLDSig format (simplified)
-      const canonicalXml = xmlContent.trim();
-      
-      // Create digest of the XML content
+      const canonicalXml = xmlToSign.trim();
       const messageDigest = forge.md.sha256.create();
       messageDigest.update(canonicalXml, 'utf8');
       const digestValue = forge.util.encode64(messageDigest.digest().getBytes());
-      
-      // Sign the digest
-      const signature = (privateKey as forge.pki.rsa.PrivateKey).sign(messageDigest);
+      const signature = privateKey.sign(messageDigest);
       const signatureValue = forge.util.encode64(signature);
-      
-      // Get certificate as base64
+
+      if (!certificate) {
+        throw new Error('Certificate is undefined. Please check the provided .p12 file.');
+      }
       const certPem = forge.pki.certificateToPem(certificate);
       const certBase64 = certPem.replace(/-----BEGIN CERTIFICATE-----\n?/, '')
-                                .replace(/\n?-----END CERTIFICATE-----\n?/, '')
-                                .replace(/\n/g, '');
+        .replace(/\n?-----END CERTIFICATE-----\n?/, '')
+        .replace(/\n/g, '');
 
-      // Create signed XML in XMLDSig format that KSeF expects
       const signedXmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <tns:InitSessionSignedRequest xmlns:tns="http://ksef.mf.gov.pl/schema/gtw/svc/online/auth/request/2021/10/01/0001" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
   ${canonicalXml.replace('<?xml version="1.0" encoding="UTF-8"?>', '').trim()}
@@ -149,16 +122,12 @@ const RequestTokenPage: React.FC = () => {
   </ds:Signature>
 </tns:InitSessionSignedRequest>`;
 
-      // Save signed XML
       const blob = new Blob([signedXmlContent], { type: 'application/xml' });
       saveAs(blob, 'SignedInitSession.xml');
-      
-      alert('✅ XML signed successfully with test certificate!\nFile saved as SignedInitSession.xml\n\nYou can now upload this file to generate your session token.');
-      
+      alert('✅ XML signed successfully with test certificate!');
     } catch (error) {
       console.error('❌ Signing error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-      alert(`❌ Failed to sign XML: ${errorMessage}`);
+      alert(`❌ Failed to sign XML: ${error instanceof Error ? error.message : error}`);
     }
   };
 
