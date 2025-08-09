@@ -3,7 +3,7 @@ import { useCompanyContext } from '../context/CompanyContext';
 import type { Environment } from '../types/company';
 
 const CompanySelector: React.FC = () => {
-  const { companies, activeCompany, setActive, addCompanyFromLookup } = useCompanyContext();
+  const { activeCompany, addCompanyFromLookup } = useCompanyContext();
   const [id, setId] = useState('');
   const [env, setEnv] = useState<Environment>('production');
   const [loading, setLoading] = useState(false);
@@ -24,26 +24,17 @@ const CompanySelector: React.FC = () => {
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2 items-center">
-        <select
-          className="border rounded px-3 py-2"
-          value={activeCompany?.id || ''}
-          onChange={(e) => setActive(e.target.value || null)}
-        >
-          <option value="">{companies.length ? 'Select company' : 'No companies saved'}</option>
-          {companies.map(c => (
-            <option key={c.id} value={c.id}>
-              {c.name} ({c.nip || c.regon}) [{c.environment}]
-            </option>
-          ))}
-        </select>
-        {activeCompany && (
-          <span className="text-xs px-2 py-1 rounded bg-gray-100 border">
-            Active env: {activeCompany.environment}
+      {/* Show current active company info */}
+      {activeCompany && (
+        <div className="text-sm p-2 bg-gray-50 rounded border">
+          Current: <strong>{activeCompany.name}</strong> ({activeCompany.nip || activeCompany.regon}) 
+          <span className="ml-2 px-2 py-0.5 rounded bg-white border text-xs">
+            {activeCompany.environment}
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
+      {/* Add new company form */}
       <div className="flex gap-2 flex-wrap">
         <input
           className="border rounded px-3 py-2 flex-1"
@@ -73,3 +64,4 @@ const CompanySelector: React.FC = () => {
 };
 
 export default CompanySelector;
+        
