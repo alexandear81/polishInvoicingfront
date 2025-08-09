@@ -13,7 +13,8 @@ import { AuthProvider } from './context/AuthContext';
 import { useAuth } from "./hooks/useAuth";
 import type { JSX } from "react";
 import CookieBanner from "./components/msc/CookieBanner";
-import { CompanyProvider } from './context/CompanyContext';
+import { DataProvider } from './context/DataContext';
+
 
 export default function App() {
   const user = useAuth();
@@ -24,7 +25,7 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <CompanyProvider>
+      <DataProvider>
         <>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -40,7 +41,7 @@ export default function App() {
         </Routes>
         <CookieBanner />
         </>
-      </CompanyProvider>
+      </DataProvider>
     </AuthProvider>
   );
 }

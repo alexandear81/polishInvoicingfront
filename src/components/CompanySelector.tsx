@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useCompanyContext } from '../context/CompanyContext';
+import { useCompanies } from '../context/DataContext';
 import type { Environment } from '../types/company';
 
 const CompanySelector: React.FC = () => {
-  const { activeCompany, addCompanyFromLookup } = useCompanyContext();
+  const { activeCompany, addCompanyFromLookup } = useCompanies();
   const [id, setId] = useState('');
   const [env, setEnv] = useState<Environment>('production');
   const [loading, setLoading] = useState(false);
@@ -64,4 +64,4 @@ const CompanySelector: React.FC = () => {
 };
 
 export default CompanySelector;
-        
+

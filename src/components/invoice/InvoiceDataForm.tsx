@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { InvoiceData, Party, InvoiceItem } from "../../types/invoice";
 import Parties from "./Parties";
 import Dates from "./Dates";
 import Items from "./Items";
 import InvoicePreview from "./InvoicePreview"
+import CompanySelector from "../CompanySelector";
+import { useCompanyContext } from "../../context/CompanyContext";
 
 const emptyParty: Party = { name: "", nip: "", address: "", account: "", email: "" };
 const emptyItem: InvoiceItem = { description: "", unit: "", quantity: 1, price: 0, vatRate: 23, taxAmount: 0, total: 0 };
@@ -18,6 +20,24 @@ export default function InvoiceDataForm() {
         paymentMethod: "Bank Transfer",
         items: [{ ...emptyItem }],
     });
+    const { activeCompany } = useCompanyContext();
+
+    // Auto-fill seller from active company
+    useEffect(() => {
+        if (!activeCompany) return;
+        setInvoice(prev => ({
+            ...prev,
+            parties: {
+                ...prev.parties,
+                seller: {
+                    ...prev.parties.seller,
+                    name: activeCompany.name || "",
+                    nip: activeCompany.nip || "",
+                    address: activeCompany.address || ""
+                }
+            }
+        }));
+    }, [activeCompany]);
 
     // Handlers for subcomponents
     const updateParties = (parties: InvoiceData["parties"]) => setInvoice(prev => ({ ...prev, parties }));
@@ -32,6 +52,19 @@ export default function InvoiceDataForm() {
 
     return (
         <form className="space-y-8 max-w-3xl mx-auto">
+            {/* Company selection first */}
+            <div className="p-4 border rounded bg-gray-50 space-y-3">
+                <h3 className="font-semibold">Your Company</h3>
+                <CompanySelector />
+                {activeCompany ? (
+                    <div className="text-sm">
+                        Current environment: <span className="px-2 py-0.5 rounded bg-white border">{activeCompany.environment}</span>
+                    </div>
+                ) : (
+                    <div className="text-sm text-amber-700">No company selected. Add/select your company to enable smart party lookup.</div>
+                )}
+            </div>
+
             <Parties parties={invoice.parties} onChange={updateParties} />
             <Dates dates={invoice.dates} onChange={updateDates} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
