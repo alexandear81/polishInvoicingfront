@@ -12,6 +12,7 @@ import SettingsPage from './pages/SettingsPage';
 import { useAuth } from "./hooks/useAuth";
 import type { JSX } from "react";
 import CookieBanner from "./components/msc/CookieBanner";
+import { CompanyProvider } from './context/CompanyContext';
 
 export default function App() {
   const user = useAuth();
@@ -21,6 +22,7 @@ export default function App() {
   };
 
   return (
+    <CompanyProvider>
     <>
     <Routes>
       <Route path="/" element={<Landing />} />
@@ -36,5 +38,6 @@ export default function App() {
     </Routes>
     <CookieBanner />
     </>
+    </CompanyProvider>
   );
 }
