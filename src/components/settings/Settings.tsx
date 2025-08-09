@@ -1,8 +1,8 @@
-import { useCompanyContext } from "../../context/CompanyContext";
+import { useCompanies } from "../../context/DataContext";
 import CompanySelector from "../CompanySelector";
 
 export default function Settings() {
-  const { companies, activeCompany, setActive, removeCompany } = useCompanyContext();
+  const { companies, activeCompany, setActiveCompany, removeCompany } = useCompanies();
 
   return (
     <>
@@ -29,7 +29,7 @@ export default function Settings() {
               <div className="flex gap-2">
                 <button
                   className="px-3 py-1 rounded border"
-                  onClick={() => setActive(c.id)}
+                  onClick={() => setActiveCompany(c.id)}
                   disabled={activeCompany?.id === c.id}
                 >
                   {activeCompany?.id === c.id ? 'Active' : 'Set active'}

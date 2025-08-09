@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { saveAs } from 'file-saver';
 import { ksefApi } from '../services/ksefApi';
-import { useCompanyContext } from '../context/CompanyContext';
+import { useCompanies } from '../context/DataContext';
 
 // Proper TypeScript interfaces
 interface SendInvoiceResponse {
@@ -31,7 +31,7 @@ const SendInvoicePage: React.FC = () => {
   const [isTerminating, setIsTerminating] = useState(false);
   const [isLoadingFile, setIsLoadingFile] = useState(false);
 
-  const { activeCompany } = useCompanyContext();
+  const { activeCompany } = useCompanies();
 
   // Helpers
   const downloadJson = (filename: string, data: unknown) => {
