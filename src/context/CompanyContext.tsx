@@ -1,9 +1,22 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import type { Company, Environment } from '../types/company';
 import { ksefApi } from '../services/ksefApi';
+import { useAuth } from './AuthContext';
 import {
-  getCompanies, upsertCompany,
-  getActiveCompany, getActiveCompanyId, setActiveCompanyId, removeCompany as removeCompanyStore
+  getCompaniesForUser,
+  saveCompanyForUser,
+  removeCompanyForUser,
+  getActiveCompanyIdForUser,
+  setActiveCompanyIdForUser,
+} from '../services/firebaseCompanyStore';
+import {
+  getCompanies,
+  saveCompanies,
+  upsertCompany,
+  getActiveCompany,
+  getActiveCompanyId,
+  setActiveCompanyId,
+  removeCompany as removeCompanyStore
 } from '../services/companyStore';
 
 type Ctx = {
@@ -12,40 +25,110 @@ type Ctx = {
   setActive: (id: string | null) => void;
   addCompanyFromLookup: (id: string, environment: Environment) => Promise<Company>;
   removeCompany: (id: string) => void;
+  loading: boolean;
 };
 
 const CompanyContext = createContext<Ctx | undefined>(undefined);
 
 export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
   const [companies, setCompanies] = useState<Company[]>(() => getCompanies());
   const [activeCompany, setActiveCompany] = useState<Company | null>(() => getActiveCompany());
+  const [loading, setLoading] = useState(false);
 
+  // Sync with Firebase when user logs in
   useEffect(() => {
-    // keep state in sync with storage (in case other tabs modify it)
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === 'pi_companies') setCompanies(getCompanies());
-      if (e.key === 'pi_activeCompanyId') setActiveCompany(getActiveCompany());
+    if (!user) return;
+
+    const syncWithFirebase = async () => {
+      setLoading(true);
+      try {
+        // Get data from both sources
+        const localCompanies = getCompanies();
+        const firebaseCompanies = await getCompaniesForUser(user);
+        const firebaseActiveId = await getActiveCompanyIdForUser(user);
+
+        // Merge companies (Firebase takes precedence for conflicts)
+        const mergedCompanies = [...firebaseCompanies];
+        localCompanies.forEach(localComp => {
+          if (!mergedCompanies.find(fbComp => fbComp.id === localComp.id)) {
+            mergedCompanies.push(localComp);
+            // Save new local company to Firebase
+            saveCompanyForUser(user, localComp).catch(console.error);
+          }
+        });
+
+        // Update localStorage with merged data
+        saveCompanies(mergedCompanies);
+        setCompanies(mergedCompanies);
+
+        // Set active company (Firebase preference, then local)
+        const activeId = firebaseActiveId || getActiveCompanyId();
+        if (activeId) {
+          const active = mergedCompanies.find(c => c.id === activeId);
+          if (active) {
+            setActiveCompanyId(activeId);
+            setActiveCompany(active);
+            // Sync active company to Firebase if it was local-only
+            if (!firebaseActiveId) {
+              setActiveCompanyIdForUser(user, activeId).catch(console.error);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to sync with Firebase:', error);
+      } finally {
+        setLoading(false);
+      }
     };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
 
-  const setActive = useCallback((id: string | null) => {
+    syncWithFirebase();
+  }, [user]);
+
+  // Keep localStorage in sync with state changes
+  useEffect(() => {
+    saveCompanies(companies);
+  }, [companies]);
+
+  const setActive = useCallback(async (id: string | null) => {
+    // Update localStorage immediately
     setActiveCompanyId(id);
-    setActiveCompany(id ? getCompanies().find(c => c.id === id) || null : null);
-  }, []);
+    const active = id ? companies.find(c => c.id === id) || null : null;
+    setActiveCompany(active);
 
-  const removeCompany = useCallback((id: string) => {
+    // Sync to Firebase if user is logged in
+    if (user) {
+      try {
+        await setActiveCompanyIdForUser(user, id);
+      } catch (error) {
+        console.error('Failed to sync active company to Firebase:', error);
+      }
+    }
+  }, [user, companies]);
+
+  const removeCompany = useCallback(async (id: string) => {
+    // Update localStorage immediately
     removeCompanyStore(id);
-    setCompanies(getCompanies());
-    const currentActive = getActiveCompanyId();
-    if (currentActive === id) setActive(null);
-  }, [setActive]);
+    const updatedCompanies = getCompanies();
+    setCompanies(updatedCompanies);
+    
+    if (getActiveCompanyId() === id) {
+      await setActive(null);
+    }
+
+    // Sync to Firebase if user is logged in
+    if (user) {
+      try {
+        await removeCompanyForUser(user, id);
+      } catch (error) {
+        console.error('Failed to remove company from Firebase:', error);
+      }
+    }
+  }, [user, setActive]);
 
   const addCompanyFromLookup = useCallback(async (id: string, environment: Environment) => {
     const resp = await ksefApi.lookupCompany(id, environment === 'production' ? 'production' : 'test');
-    // Map backend response to Company entity
-    const data = resp?.data || resp; // handle either wrapped or plain
+    const data = resp?.data || resp;
     const company: Company = {
       id: `${(data.nip || id)}:${environment}`,
       name: data.name || data.shortName || 'Unknown company',
@@ -55,11 +138,23 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       environment,
       createdAt: new Date().toISOString(),
     };
+    
+    // Update localStorage immediately
     upsertCompany(company);
     setCompanies(getCompanies());
-    setActive(company.id);
+    await setActive(company.id);
+
+    // Sync to Firebase if user is logged in
+    if (user) {
+      try {
+        await saveCompanyForUser(user, company);
+      } catch (error) {
+        console.error('Failed to save company to Firebase:', error);
+      }
+    }
+
     return company;
-  }, [setActive]);
+  }, [user, setActive]);
 
   const value = useMemo<Ctx>(() => ({
     companies,
@@ -67,7 +162,8 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setActive,
     addCompanyFromLookup,
     removeCompany,
-  }), [companies, activeCompany, setActive, addCompanyFromLookup, removeCompany]);
+    loading
+  }), [companies, activeCompany, setActive, addCompanyFromLookup, removeCompany, loading]);
 
   return <CompanyContext.Provider value={value}>{children}</CompanyContext.Provider>;
 };
