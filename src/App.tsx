@@ -9,6 +9,7 @@ import SendToKsefPage from './pages/SendToKsefPage';
 import RequestTokenPage from './pages/RequestTokenPage';
 import SendInvoicePage from './pages/SendInvoicePage';
 import SettingsPage from './pages/SettingsPage';
+import { AuthProvider } from './context/AuthContext';
 import { useAuth } from "./hooks/useAuth";
 import type { JSX } from "react";
 import CookieBanner from "./components/msc/CookieBanner";
@@ -22,22 +23,24 @@ export default function App() {
   };
 
   return (
-    <CompanyProvider>
-    <>
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      {/* <Route path="/callback" element={<CallbackPage />} /> */}
-      <Route path="/dashboard" element={requireAuth(<Dashboard />)} />
-      <Route path="/create" element={requireAuth(<CreateInvoicePage />)} />
-      <Route path="/edit" element={requireAuth(<EditInvoicePage />)} />
-      <Route path="/incoming" element={requireAuth(<IncomingInvoicesPage />)} />
-      <Route path="/send" element={requireAuth(<SendToKsefPage />)} />
-      <Route path="/token" element={requireAuth(<RequestTokenPage />)} />
-      <Route path="/send-invoice" element={requireAuth(<SendInvoicePage />)} />
-      <Route path="/settings" element={requireAuth(<SettingsPage />)} />
-    </Routes>
-    <CookieBanner />
-    </>
-    </CompanyProvider>
+    <AuthProvider>
+      <CompanyProvider>
+        <>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          {/* <Route path="/callback" element={<CallbackPage />} /> */}
+          <Route path="/dashboard" element={requireAuth(<Dashboard />)} />
+          <Route path="/create" element={requireAuth(<CreateInvoicePage />)} />
+          <Route path="/edit" element={requireAuth(<EditInvoicePage />)} />
+          <Route path="/incoming" element={requireAuth(<IncomingInvoicesPage />)} />
+          <Route path="/send" element={requireAuth(<SendToKsefPage />)} />
+          <Route path="/token" element={requireAuth(<RequestTokenPage />)} />
+          <Route path="/send-invoice" element={requireAuth(<SendInvoicePage />)} />
+          <Route path="/settings" element={requireAuth(<SettingsPage />)} />
+        </Routes>
+        <CookieBanner />
+        </>
+      </CompanyProvider>
+    </AuthProvider>
   );
 }
