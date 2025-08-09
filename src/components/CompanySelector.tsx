@@ -15,7 +15,6 @@ const CompanySelector: React.FC = () => {
       await addCompanyFromLookup(id.trim().replace(/\s|-/g, ''), env);
     } catch (e: any) {
       alert(`Lookup failed: ${e?.message || 'Unknown error'}`);
-      // eslint-disable-next-line no-console
       console.error(e);
     } finally {
       setLoading(false);
