@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import type { InvoiceData, Party, InvoiceItem } from "../../types/invoice";
+import type { InvoiceData, Party, InvoiceItem } from "../../../types/invoice";
 import Parties from "./Parties";
 import Dates from "./Dates";
 import Items from "./Items";
 import InvoicePreview from "./InvoicePreview"
-import CompanySelector from "../CompanySelector";
-import { useCompanies } from "../../context/DataContext";
+import CompanySelector from "../../../components/CompanySelector";
+import { useCompanies } from "../../../context/DataContext";
 
 const emptyParty: Party = { name: "", nip: "", address: "", account: "", email: "" };
 const emptyItem: InvoiceItem = { description: "", unit: "", quantity: 1, price: 0, vatRate: 23, taxAmount: 0, total: 0 };

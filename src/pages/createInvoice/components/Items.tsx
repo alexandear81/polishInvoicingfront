@@ -1,4 +1,4 @@
-import type { InvoiceItem } from "../../types/invoice";
+import type { InvoiceItem } from "../../../types/invoice";
 
 interface ItemsProps {
   items: InvoiceItem[];

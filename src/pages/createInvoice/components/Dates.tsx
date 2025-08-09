@@ -1,4 +1,4 @@
-import type { InvoiceData } from "../../types/invoice";
+import type { InvoiceData } from "../../../types/invoice";
 
 interface DatesProps {
   dates: InvoiceData["dates"];

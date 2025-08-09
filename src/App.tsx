@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 //import CallbackPage from './pages/CallbackPage';
-import CreateInvoicePage from './pages/CreateInvoicePage';
+import CreateInvoicePage from './pages/createInvoice/CreateInvoicePage';
 import EditInvoicePage from './pages/EditInvoicePage';
 import IncomingInvoicesPage from './pages/IncomingInvoicesPage';
 import SendToKsefPage from './pages/SendToKsefPage';

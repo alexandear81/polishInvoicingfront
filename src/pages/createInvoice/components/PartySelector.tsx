@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import type { Party } from '../../types/invoice';
+import type { Party } from '../../../types/invoice';
 //import type { Client } from '../../types/client';
-import { useCompanyContext } from '../../context/CompanyContext';
-import { useClientContext } from '../../context/ClientContext';
-import { ksefApi } from '../../services/ksefApi';
+//import { useCompanyContext } from '../../context/CompanyContext';
+import { useClients, useCompanies } from '../../../context/DataContext';
+import { ksefApi } from '../../../services/ksefApi';
 
 interface PartySelectorProps {
   label: string;
@@ -13,8 +13,8 @@ interface PartySelectorProps {
 }
 
 const PartySelector: React.FC<PartySelectorProps> = ({ label, party, onChange, type }) => {
-  const { activeCompany, companies, setActive, addCompanyFromLookup } = useCompanyContext();
-  const { clients, addClientFromLookup, markClientUsed } = useClientContext();
+  const { companies, activeCompany, addCompanyFromLookup, setActiveCompany } = useCompanies();
+  const { clients, addClientFromLookup, markClientUsed } = useClients();
   const [lookupId, setLookupId] = useState('');
   const [isLooking, setIsLooking] = useState(false);
 
@@ -22,7 +22,7 @@ const PartySelector: React.FC<PartySelectorProps> = ({ label, party, onChange, t
     if (type === 'seller') {
       const company = companies.find(c => c.id === selectedId);
       if (company) {
-        setActive(selectedId);
+        setActiveCompany(selectedId);
         onChange({
           name: company.name,
           nip: company.nip || '',
