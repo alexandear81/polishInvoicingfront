@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useMemo, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import type { Company, Environment } from '../types/company';
 import { ksefApi } from '../services/ksefApi';
 import {
-  getCompanies, saveCompanies, upsertCompany,
+  getCompanies, upsertCompany,
   getActiveCompany, getActiveCompanyId, setActiveCompanyId, removeCompany as removeCompanyStore
 } from '../services/companyStore';
 
