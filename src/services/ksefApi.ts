@@ -9,7 +9,7 @@ import axios from 'axios';
  * Production Backend: https://polishinvoicingback-1.onrender.com
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://polishinvoicingback-1.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://polishinvoicingback-1.onrender.com';
 
 // Create axios instance with default config
 export const apiClient = axios.create({
@@ -52,21 +52,8 @@ apiClient.interceptors.response.use(
 export const ksefApi = {
   // Request authorization challenge
   requestChallenge: async (contextIdentifier: { type: string; identifier: string }) => {
-    const response = await apiClient.post('/api/ksef/authorization-challenge', {
+    const response = await apiClient.post('/api/ksef/request-challenge', {
       contextIdentifier,
-    });
-    return response.data;
-  },
-
-  // Initialize session with signed XML
-  initSession: async (signedXmlFile: File) => {
-    const formData = new FormData();
-    formData.append('signedXml', signedXmlFile);
-    
-    const response = await apiClient.post('/api/ksef/init-session-signed', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
     });
     return response.data;
   },
@@ -80,7 +67,7 @@ export const ksefApi = {
     return response.data;
   },
 
-  // Send invoice
+  // Send invoice to KSeF
   sendInvoice: async (sessionToken: string, invoiceXml: string) => {
     const response = await apiClient.post('/api/ksef/send-invoice', {
       sessionToken,
@@ -91,9 +78,9 @@ export const ksefApi = {
 
   // Get invoice status
   getInvoiceStatus: async (sessionToken: string, referenceNumber: string) => {
-    const response = await apiClient.get(`/api/ksef/invoice-status/${referenceNumber}`, {
+    const response = await apiClient.get(`/api/ksef/invoice-status/${encodeURIComponent(referenceNumber)}`, {
       headers: {
-        'session-token': sessionToken,
+        'Authorization': `Bearer ${sessionToken}`,
       },
     });
     return response.data;
@@ -101,13 +88,19 @@ export const ksefApi = {
 
   // Terminate session
   terminateSession: async (sessionToken: string) => {
-    const response = await apiClient.post('/api/ksef/terminate-session', {}, {
-      headers: {
-        'session-token': sessionToken,
-      },
+    const response = await apiClient.post('/api/ksef/terminate-session', {
+      sessionToken,
     });
     return response.data;
   },
+
+  // Company lookup using GUS REGON API (supports NIP/REGON) with environment selection
+  lookupCompany: async (id: string, environment: 'test' | 'production' | 'prod' = 'production') => {
+    const response = await apiClient.get(
+      `/api/gus/search/${encodeURIComponent(id)}?environment=${encodeURIComponent(environment)}`
+    );
+    return response.data;
+  }
 };
 
 export default ksefApi;
