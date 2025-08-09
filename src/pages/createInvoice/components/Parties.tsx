@@ -15,7 +15,7 @@ export default function Parties({ parties, onChange }: PartiesProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {["buyer", "seller"].map(role => (
+      {["seller", "buyer"].map(role => (
         <div key={role} className="p-4 border rounded-lg bg-gray-50">
           <h2 className="font-semibold mb-2 text-blue-600">{role === "buyer" ? "Buyer" : "Seller"}</h2>
           {Object.keys(parties[role as "buyer" | "seller"]).map(field => (
