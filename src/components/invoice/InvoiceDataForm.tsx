@@ -5,7 +5,7 @@ import Dates from "./Dates";
 import Items from "./Items";
 import InvoicePreview from "./InvoicePreview"
 import CompanySelector from "../CompanySelector";
-import { useCompanyContext } from "../../context/CompanyContext";
+import { useCompanies } from "../../context/DataContext";
 
 const emptyParty: Party = { name: "", nip: "", address: "", account: "", email: "" };
 const emptyItem: InvoiceItem = { description: "", unit: "", quantity: 1, price: 0, vatRate: 23, taxAmount: 0, total: 0 };
@@ -20,7 +20,7 @@ export default function InvoiceDataForm() {
         paymentMethod: "Bank Transfer",
         items: [{ ...emptyItem }],
     });
-    const { activeCompany } = useCompanyContext();
+    const { activeCompany } = useCompanies();
 
     // Auto-fill seller from active company
     useEffect(() => {
